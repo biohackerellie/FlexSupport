@@ -7,20 +7,13 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-
 	"flexsupport/internal/handlers"
 )
 
 func main() {
 	// Initialize router
-	r := chi.NewRouter()
 
 	// Middleware
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.StripSlashes)
 
 	// Parse templates
 	templates, err := loadTemplates()

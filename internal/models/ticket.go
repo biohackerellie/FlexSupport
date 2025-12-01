@@ -2,11 +2,38 @@ package models
 
 import "time"
 
+type Status string
+
+func (s Status) String() string {
+	return string(s)
+}
+
+const (
+	StatusNew          Status = "new"
+	StatusInProgress   Status = "in_progress"
+	StatusWaitingParts Status = "waiting_parts"
+	StatusReady        Status = "ready"
+	StatusCompleted    Status = "completed"
+)
+
+type Priority string
+
+func (p Priority) String() string {
+	return string(p)
+}
+
+const (
+	PriorityLow    Priority = "low"
+	PriorityNormal Priority = "normal"
+	PriorityHigh   Priority = "high"
+	PriorityUrgent Priority = "urgent"
+)
+
 // Ticket represents a repair ticket in the system
 type Ticket struct {
-	ID          int       `json:"id"`
-	Status      string    `json:"status"` // new, in_progress, waiting_parts, ready, completed
-	Priority    string    `json:"priority"` // low, normal, high, urgent
+	ID       int      `json:"id"`
+	Status   Status   `json:"status"`
+	Priority Priority `json:"priority"` // low, normal, high, urgent
 
 	// Customer information
 	CustomerName  string `json:"customer_name"`
@@ -41,13 +68,13 @@ type Ticket struct {
 
 // Part represents a replacement part or material used in a repair
 type Part struct {
-	ID       int     `json:"id"`
-	TicketID int     `json:"ticket_id"`
-	Name     string  `json:"name"`
-	Quantity int     `json:"quantity"`
-	Cost     float64 `json:"cost"`
+	ID       int       `json:"id"`
+	TicketID int       `json:"ticket_id"`
+	Name     string    `json:"name"`
+	Quantity int       `json:"quantity"`
+	Cost     float64   `json:"cost"`
 	AddedAt  time.Time `json:"added_at"`
-	AddedBy  string  `json:"added_by"`
+	AddedBy  string    `json:"added_by"`
 }
 
 // WorkNote represents a work log entry or note on a ticket
@@ -71,33 +98,33 @@ type Customer struct {
 
 // Technician represents a repair technician user
 type Technician struct {
-	ID           int    `json:"id"`
-	Name         string `json:"name"`
-	Email        string `json:"email"`
-	ActiveJobs   int    `json:"active_jobs"`
-	IsAvailable  bool   `json:"is_available"`
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	ActiveJobs  int    `json:"active_jobs"`
+	IsAvailable bool   `json:"is_available"`
 }
 
 // TicketStats represents dashboard statistics
 type TicketStats struct {
-	OpenTickets     int `json:"open_tickets"`
-	InProgress      int `json:"in_progress"`
-	Overdue         int `json:"overdue"`
-	CompletedToday  int `json:"completed_today"`
+	OpenTickets    int `json:"open_tickets"`
+	InProgress     int `json:"in_progress"`
+	Overdue        int `json:"overdue"`
+	CompletedToday int `json:"completed_today"`
 }
 
 // StatusClass returns the Tailwind CSS class for the ticket status badge
 func (t *Ticket) StatusClass() string {
 	switch t.Status {
-	case "new":
+	case StatusNew:
 		return "bg-blue-100 text-blue-800"
-	case "in_progress":
+	case StatusInProgress:
 		return "bg-yellow-100 text-yellow-800"
-	case "waiting_parts":
+	case StatusWaitingParts:
 		return "bg-orange-100 text-orange-800"
-	case "ready":
+	case StatusReady:
 		return "bg-green-100 text-green-800"
-	case "completed":
+	case StatusCompleted:
 		return "bg-gray-100 text-gray-800"
 	default:
 		return "bg-gray-100 text-gray-800"
@@ -107,18 +134,18 @@ func (t *Ticket) StatusClass() string {
 // StatusDisplay returns a human-readable status string
 func (t *Ticket) StatusDisplay() string {
 	switch t.Status {
-	case "new":
+	case StatusNew:
 		return "New"
-	case "in_progress":
+	case StatusInProgress:
 		return "In Progress"
-	case "waiting_parts":
+	case StatusWaitingParts:
 		return "Waiting for Parts"
-	case "ready":
+	case StatusReady:
 		return "Ready for Pickup"
-	case "completed":
+	case StatusCompleted:
 		return "Completed"
 	default:
-		return t.Status
+		return t.Status.String()
 	}
 }
 

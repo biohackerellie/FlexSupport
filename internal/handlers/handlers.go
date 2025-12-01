@@ -29,7 +29,7 @@ func NewHandler(templates map[string]*template.Template) *Handler {
 // Dashboard renders the main dashboard view
 func (h *Handler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch real data from database
-	data := map[string]interface{}{
+	data := map[string]any{
 		"CurrentUser": "Admin User",
 		"Stats": models.TicketStats{
 			OpenTickets:    12,
@@ -52,14 +52,14 @@ func (h *Handler) ListTickets(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Listing tickets with status=%s, search=%s", status, search)
 
 	// For now, return mock data
-	h.renderPartial(w, "ticket-list", map[string]interface{}{
+	h.renderPartial(w, "ticket-list", map[string]any{
 		"Tickets": getMockTickets(),
 	})
 }
 
 // NewTicketForm renders the new ticket form
 func (h *Handler) NewTicketForm(w http.ResponseWriter, r *http.Request) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"CurrentUser": "Admin User",
 		"Ticket":      &models.Ticket{},
 		"Technicians": getMockTechnicians(),
@@ -95,7 +95,7 @@ func (h *Handler) ViewTicket(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch from database
 	ticket := getMockTicket(id)
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"CurrentUser": "Admin User",
 		"Ticket":      ticket,
 	}
@@ -115,7 +115,7 @@ func (h *Handler) EditTicketForm(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch from database
 	ticket := getMockTicket(id)
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"CurrentUser": "Admin User",
 		"Ticket":      ticket,
 		"Technicians": getMockTechnicians(),
@@ -144,7 +144,7 @@ func (h *Handler) SearchTickets(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Searching tickets: %s", search)
 
 	// TODO: Implement search
-	h.renderPartial(w, "ticket-list", map[string]interface{}{
+	h.renderPartial(w, "ticket-list", map[string]any{
 		"Tickets": getMockTickets(),
 	})
 }
@@ -224,7 +224,7 @@ func (h *Handler) AddNote(w http.ResponseWriter, r *http.Request) {
 // TechnicianQueue shows the technician's work queue
 func (h *Handler) TechnicianQueue(w http.ResponseWriter, r *http.Request) {
 	// TODO: Filter tickets by assigned technician
-	data := map[string]interface{}{
+	data := map[string]any{
 		"CurrentUser": "Tech User",
 		"Tickets":     getMockTickets(),
 	}
@@ -243,7 +243,7 @@ func (h *Handler) TechnicianTicketView(w http.ResponseWriter, r *http.Request) {
 
 	ticket := getMockTicket(id)
 
-	data := map[string]interface{}{
+	data := map[string]any{
 		"CurrentUser": "Tech User",
 		"Ticket":      ticket,
 	}
@@ -258,7 +258,7 @@ func (h *Handler) GetOpenTicketsCount(w http.ResponseWriter, r *http.Request) {
 }
 
 // render executes a template with base layout
-func (h *Handler) render(w http.ResponseWriter, templateName string, data map[string]interface{}) {
+func (h *Handler) render(w http.ResponseWriter, templateName string, data map[string]any) {
 	// Get the template set for this page
 	tmpl, ok := h.templates[templateName]
 	if !ok {
@@ -275,7 +275,7 @@ func (h *Handler) render(w http.ResponseWriter, templateName string, data map[st
 }
 
 // renderPartial executes a template without the base layout
-func (h *Handler) renderPartial(w http.ResponseWriter, templateName string, data map[string]interface{}) {
+func (h *Handler) renderPartial(w http.ResponseWriter, templateName string, data map[string]any) {
 	// For partials, try to find them in any template set (use the first one)
 	for _, tmpl := range h.templates {
 		if err := tmpl.ExecuteTemplate(w, templateName, data); err == nil {

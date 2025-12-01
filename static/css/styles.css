@@ -1,6 +1,6 @@
-/* Custom styles for RepairDesk */
 
-/* Add any custom CSS overrides here */
+@import 'tailwindcss';
+
 
 /* Smooth transitions for htmx swaps */
 .htmx-swapping {
