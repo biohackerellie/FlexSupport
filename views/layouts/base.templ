@@ -1,0 +1,84 @@
+package layouts
+import (
+  "flexsupport/views/components/dialog"
+  "flexsupport/views/components/calendar"
+  "flexsupport/views/components/collapsible"
+  "flexsupport/views/components/copybutton"
+  "flexsupport/views/components/datepicker"
+  "flexsupport/views/components/dropdown"
+  "flexsupport/views/components/input"
+  "flexsupport/views/components/label"
+  "flexsupport/views/components/popover"
+  "flexsupport/views/components/selectbox"
+  "flexsupport/views/components/textarea"
+  "flexsupport/views/components/toast"
+  "flexsupport/views/modules" 
+  "fmt"
+)
+
+templ BaseLayout() {
+  <!DOCTYPE html>
+  <html lang="en" class="h-full dark">
+	<head>
+
+    @dialog.Script()
+    @calendar.Script()
+    @collapsible.Script()
+    @copybutton.Script()
+    @datepicker.Script()
+    @dropdown.Script()
+    @input.Script()
+    @label.Script()
+    @popover.Script()
+    @selectbox.Script()
+    @textarea.Script()
+    @toast.Script()
+		<script nonce={templ.GetNonce(ctx)} src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" integrity="sha384-/TgkGk7p307TH7EXJDuUlgG3Ce1UVolAOFopFekQkkXihi5u/6OCvVKyz1W+idaz" crossorigin="anonymous"></script>
+			<meta
+				name="htmx-config"
+				content={ fmt.Sprintf(`{
+			    "inlineScriptNonce": "%s"
+			}`, templ.GetNonce(ctx)) }
+			/>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script nonce={ templ.GetNonce(ctx) }>
+      (function() {
+        // Get current theme preference (system, light, or dark)
+        function getThemePreference() {
+          return localStorage.getItem('themePreference') || 'system';
+        }
+        
+        // Apply theme based on preference
+        const preference = getThemePreference();
+        let isDark = false;
+        
+        if (preference === 'system') {
+          // Use system preference
+          isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        } else {
+          // Use explicit preference
+          isDark = preference === 'dark';
+        }
+        
+        // Apply theme immediately to prevent flash
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="/assets/css/output.css">
+
+		<meta charset="UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>Flex Support</title>
+	</head>
+ 
+ 
+  <body class="h-full">
+    @modules.Navbar("dickhead") 
+    <main class="container">
+      {children...}
+    </main>
+  </body>
+</html>
+}

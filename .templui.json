@@ -1,0 +1,7 @@
+{
+  "componentsDir": "views/components",
+  "utilsDir": "internal/utils",
+  "moduleName": "flexsupport",
+  "jsDir": "assets/js",
+  "jsPublicPath": "/assets/js"
+}
