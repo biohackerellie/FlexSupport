@@ -29,21 +29,31 @@ const (
 	PriorityUrgent Priority = "urgent"
 )
 
+type ItemType string
+const (
+	Boot ItemType = "boot"
+	Shoe ItemType = "shoe"
+	Bag ItemType = "bag"
+	Other ItemType = "other"
+)
+
 // Ticket represents a repair ticket in the system
 type Ticket struct {
-	ID       int      `json:"id"`
+	ID       int64      `json:"id"`
 	Status   Status   `json:"status"`
 	Priority Priority `json:"priority"` // low, normal, high, urgent
+	ExternalTag string `json:"external_tag"`
+
 
 	// Customer information
 	CustomerName  string `json:"customer_name"`
 	CustomerPhone string `json:"customer_phone"`
 	CustomerEmail string `json:"customer_email"`
 
-	// Device information
-	DeviceType   string `json:"device_type"`
-	DeviceBrand  string `json:"device_brand"`
-	DeviceModel  string `json:"device_model"`
+	// Item information
+	ItemType   ItemType `json:"item_type"`
+	ItemBrand  string `json:"item_brand"`
+	ItemModel  string `json:"item_model"`
 	SerialNumber string `json:"serial_number"`
 
 	// Repair details
@@ -68,8 +78,8 @@ type Ticket struct {
 
 // Part represents a replacement part or material used in a repair
 type Part struct {
-	ID       int       `json:"id"`
-	TicketID int       `json:"ticket_id"`
+	ID       int64       `json:"id"`
+	TicketID int64       `json:"ticket_id"`
 	Name     string    `json:"name"`
 	Quantity int       `json:"quantity"`
 	Cost     float64   `json:"cost"`
@@ -79,8 +89,8 @@ type Part struct {
 
 // WorkNote represents a work log entry or note on a ticket
 type WorkNote struct {
-	ID        int       `json:"id"`
-	TicketID  int       `json:"ticket_id"`
+	ID        int64       `json:"id"`
+	TicketID  int64       `json:"ticket_id"`
 	Content   string    `json:"content"`
 	Author    string    `json:"author"`
 	Timestamp time.Time `json:"timestamp"`
@@ -88,7 +98,7 @@ type WorkNote struct {
 
 // Customer represents customer information (for future use)
 type Customer struct {
-	ID          int       `json:"id"`
+	ID          int64       `json:"id"`
 	Name        string    `json:"name"`
 	Phone       string    `json:"phone"`
 	Email       string    `json:"email"`
@@ -98,7 +108,7 @@ type Customer struct {
 
 // Technician represents a repair technician user
 type Technician struct {
-	ID          int    `json:"id"`
+	ID          int64    `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	ActiveJobs  int    `json:"active_jobs"`
