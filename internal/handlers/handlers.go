@@ -2,45 +2,36 @@ package handlers
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
-
+	"flexsupport/views/pages"
+	"flexsupport/views/layouts"
 	"flexsupport/internal/models"
 )
 
 // Handler holds dependencies for HTTP handlers
 type Handler struct {
-	templates map[string]*template.Template
-	// TODO: Add database connection, services, etc.
 }
 
 // NewHandler creates a new Handler instance
-func NewHandler(templates map[string]*template.Template) *Handler {
-	return &Handler{
-		templates: templates,
-	}
+func NewHandler() *Handler {
+	return &Handler{}
 }
 
 // Dashboard renders the main dashboard view
 func (h *Handler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch real data from database
-	data := map[string]any{
-		"CurrentUser": "Admin User",
-		"Stats": models.TicketStats{
-			OpenTickets:    12,
-			InProgress:     5,
-			Overdue:        2,
-			CompletedToday: 3,
-		},
-		"Tickets": getMockTickets(),
-	}
 
-	h.render(w, "dashboard", data)
+	page := pages.Dashboard(getMockTickets())
+	err := layouts.BaseLayout(page).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // ListTickets handles the ticket listing page
@@ -51,21 +42,17 @@ func (h *Handler) ListTickets(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Listing tickets with status=%s, search=%s", status, search)
 
-	// For now, return mock data
-	h.renderPartial(w, "ticket-list", map[string]any{
-		"Tickets": getMockTickets(),
-	})
 }
 
 // NewTicketForm renders the new ticket form
 func (h *Handler) NewTicketForm(w http.ResponseWriter, r *http.Request) {
-	data := map[string]any{
-		"CurrentUser": "Admin User",
-		"Ticket":      &models.Ticket{},
-		"Technicians": getMockTechnicians(),
-	}
 
-	h.render(w, "ticket-form", data)
+	page := pages.TicketForm(nil)
+	err := layouts.BaseLayout(page).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 // CreateTicket handles ticket creation
@@ -95,12 +82,14 @@ func (h *Handler) ViewTicket(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch from database
 	ticket := getMockTicket(id)
 
-	data := map[string]any{
-		"CurrentUser": "Admin User",
-		"Ticket":      ticket,
-	}
 
-	h.render(w, "technician-view", data)
+	page := pages.TicketPage(ticket)
+	err = layouts.BaseLayout(page).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	return
 }
 
 // EditTicketForm renders the edit ticket form
@@ -115,13 +104,15 @@ func (h *Handler) EditTicketForm(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch from database
 	ticket := getMockTicket(id)
 
-	data := map[string]any{
-		"CurrentUser": "Admin User",
-		"Ticket":      ticket,
-		"Technicians": getMockTechnicians(),
+	
+	page := pages.TicketForm(&ticket)
+	err = layouts.BaseLayout(page).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
+	return
 
-	h.render(w, "ticket-form", data)
 }
 
 // UpdateTicket handles ticket updates
@@ -144,9 +135,6 @@ func (h *Handler) SearchTickets(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Searching tickets: %s", search)
 
 	// TODO: Implement search
-	h.renderPartial(w, "ticket-list", map[string]any{
-		"Tickets": getMockTickets(),
-	})
 }
 
 // UpdateTicketStatus handles status updates (htmx endpoint)
@@ -221,35 +209,8 @@ func (h *Handler) AddNote(w http.ResponseWriter, r *http.Request) {
 	</div>`, now, note)
 }
 
-// TechnicianQueue shows the technician's work queue
-func (h *Handler) TechnicianQueue(w http.ResponseWriter, r *http.Request) {
-	// TODO: Filter tickets by assigned technician
-	data := map[string]any{
-		"CurrentUser": "Tech User",
-		"Tickets":     getMockTickets(),
-	}
-
-	h.render(w, "dashboard", data)
-}
 
 // TechnicianTicketView shows the detailed technician view of a ticket
-func (h *Handler) TechnicianTicketView(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid ticket ID", http.StatusBadRequest)
-		return
-	}
-
-	ticket := getMockTicket(id)
-
-	data := map[string]any{
-		"CurrentUser": "Tech User",
-		"Ticket":      ticket,
-	}
-
-	h.render(w, "technician-view", data)
-}
 
 // GetOpenTicketsCount returns the count of open tickets (htmx endpoint)
 func (h *Handler) GetOpenTicketsCount(w http.ResponseWriter, r *http.Request) {
@@ -257,36 +218,7 @@ func (h *Handler) GetOpenTicketsCount(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "12")
 }
 
-// render executes a template with base layout
-func (h *Handler) render(w http.ResponseWriter, templateName string, data map[string]any) {
-	// Get the template set for this page
-	tmpl, ok := h.templates[templateName]
-	if !ok {
-		log.Printf("Template %s not found", templateName)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
 
-	// Execute the specific page template, which will use the base layout
-	if err := tmpl.ExecuteTemplate(w, templateName, data); err != nil {
-		log.Printf("Error rendering template %s: %v", templateName, err)
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-	}
-}
-
-// renderPartial executes a template without the base layout
-func (h *Handler) renderPartial(w http.ResponseWriter, templateName string, data map[string]any) {
-	// For partials, try to find them in any template set (use the first one)
-	for _, tmpl := range h.templates {
-		if err := tmpl.ExecuteTemplate(w, templateName, data); err == nil {
-			return
-		}
-	}
-	log.Printf("Error rendering partial %s: template not found", templateName)
-	http.Error(w, "Internal server error", http.StatusInternalServerError)
-}
-
-// Mock data functions - TODO: Replace with real database queries
 
 func getMockTickets() []models.Ticket {
 	return []models.Ticket{
@@ -296,8 +228,8 @@ func getMockTickets() []models.Ticket {
 			Priority:         "high",
 			CustomerName:     "John Doe",
 			CustomerPhone:    "(555) 123-4567",
-			DeviceType:       "Smartphone",
-			DeviceModel:      "iPhone 13 Pro",
+			ItemType:       "Smartphone",
+			ItemModel:      "iPhone 13 Pro",
 			IssueDescription: "Cracked screen, needs replacement",
 			AssignedTo:       "Mike Tech",
 			DueDate:          timePtr(time.Now().Add(48 * time.Hour)),
@@ -308,8 +240,8 @@ func getMockTickets() []models.Ticket {
 			Priority:         "normal",
 			CustomerName:     "Jane Smith",
 			CustomerPhone:    "(555) 987-6543",
-			DeviceType:       "Laptop",
-			DeviceModel:      "MacBook Pro 2020",
+			ItemType:       "Laptop",
+			ItemModel:      "MacBook Pro 2020",
 			IssueDescription: "Battery not charging",
 			AssignedTo:       "Sarah Tech",
 		},
@@ -319,15 +251,15 @@ func getMockTickets() []models.Ticket {
 func getMockTicket(id int) models.Ticket {
 	dueDate := time.Now().Add(48 * time.Hour)
 	return models.Ticket{
-		ID:               id,
+		ID:               int64(id),
 		Status:           "in_progress",
 		Priority:         "high",
 		CustomerName:     "John Doe",
 		CustomerPhone:    "(555) 123-4567",
 		CustomerEmail:    "john@example.com",
-		DeviceType:       "Smartphone",
-		DeviceBrand:      "Apple",
-		DeviceModel:      "iPhone 13 Pro",
+		ItemType:       "Smartphone",
+		ItemBrand:      "Apple",
+		ItemModel:      "iPhone 13 Pro",
 		SerialNumber:     "ABC123456789",
 		IssueDescription: "Screen is completely shattered after being dropped. Touch functionality still works but glass is unsafe.",
 		EstimatedCost:    150.00,

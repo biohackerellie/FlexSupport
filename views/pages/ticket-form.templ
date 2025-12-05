@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"flexsupport/views/layouts"
 	// "flexsupport/views/components/button"
 	// "flexsupport/views/components/card"
 	// "flexsupport/views/components/input"
@@ -19,7 +18,6 @@ var ItemTypes = []models.ItemType{
 }
 
 templ TicketForm(ticket *models.Ticket) {
-	@layouts.BaseLayout() {
 		<div class="px-4 py-6 sm:px-0">
 			<!-- Page Header -->
 			<div class="mb-6">
@@ -287,5 +285,4 @@ templ TicketForm(ticket *models.Ticket) {
 				</div>
 			</div>
 		</div>
-	}
 }

@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"flexsupport/views/layouts"
 	// "flexsupport/views/components/button"
 	"flexsupport/views/components/card"
 	// "flexsupport/views/components/input"
@@ -11,7 +10,6 @@ import (
 )
 
 templ Dashboard(tickets []models.Ticket) {
-	@layouts.BaseLayout() {
 		<div class="px-4 py-6 sm:px-0">
 			<!-- Page Header -->
 			<div class="mb-6">
@@ -147,7 +145,6 @@ templ Dashboard(tickets []models.Ticket) {
 			}
 			@TicketsTable(tickets)
 		</div>
-	}
 }
 
 templ TicketsTable(tickets []models.Ticket) {
@@ -178,7 +175,7 @@ templ TicketsTable(tickets []models.Ticket) {
 					</th>
 				</tr>
 			</thead>
-			<tbody id="ticket-list" hx-get="/tickets" hx-trigger="load, every 30s" hx-select="#ticket-list" hx-swap="outerHTML" class="bg-white divide-y divide-gray-200">
+			<tbody id="ticket-list" hx-get="/tickets" hx-trigger="load, every 30s" hx-select="#ticket-list" hx-swap="innerHTML" class="bg-white divide-y divide-gray-200">
 				for _, ticket := range tickets {
 					<tr class="hover:bg-gray-50">
 						<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">

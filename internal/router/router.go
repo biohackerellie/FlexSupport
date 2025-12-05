@@ -2,6 +2,12 @@ package router
 
 import (
 	"flexsupport/internal/handlers"
+	mw "flexsupport/internal/middleware"
+	"flexsupport/static"
+	"net/http"
+
+	// "net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -9,13 +15,18 @@ import (
 func NewRouter(h *handlers.Handler) *chi.Mux {
 
 	r := chi.NewMux()
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-	r.Use(middleware.StripSlashes)
 	// Dashboard
-	r.Get("/", h.Dashboard)
 
+	r.Handle("/assets/*", http.StripPrefix("/assets/", static.AssetRouter()))
 	// Tickets
+	r.Group(func(r chi.Router) {
+	r.Use(
+		middleware.Logger,
+		middleware.Recoverer,
+		mw.CSPMiddleware,
+		mw.TextHTMLMiddleware,
+	)
+	r.Get("/", h.Dashboard)
 	r.Route("/tickets", func(r chi.Router) {
 		r.Get("/", h.ListTickets)
 		r.Get("/new", h.NewTicketForm)
@@ -31,15 +42,13 @@ func NewRouter(h *handlers.Handler) *chi.Mux {
 		r.Delete("/{id}/parts/{partId}", h.DeletePart)
 		r.Post("/{id}/notes", h.AddNote)
 	})
-
-	// Technician view
-	r.Get("/technician", h.TechnicianQueue)
-	r.Get("/technician/{id}", h.TechnicianTicketView)
+})
 
 	// API endpoints (for htmx)
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/stats/open", h.GetOpenTicketsCount)
 	})
+
 
 	return r
 }

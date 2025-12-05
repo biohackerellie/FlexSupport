@@ -1,5 +1,5 @@
 package main
 
 func main() {
-	App()
+	if err := App(); err != nil {panic(err)};
 }

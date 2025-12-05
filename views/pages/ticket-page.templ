@@ -1,7 +1,6 @@
 package pages
 
 import (
-	"flexsupport/views/layouts"
 
 	"flexsupport/internal/models"
 	"flexsupport/views/components/card"
@@ -11,7 +10,6 @@ import (
 )
 
 templ TicketPage(ticket models.Ticket) {
-	@layouts.BaseLayout() {
 		<div class="px-4 py-6 sm:px-0">
 			<!-- Page Header -->
 			<div class="mb-6 flex justify-between items-start">
@@ -373,5 +371,4 @@ templ TicketPage(ticket models.Ticket) {
 				</div>
 			</div>
 		</div>
-	}
 }
