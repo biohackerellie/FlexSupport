@@ -13,8 +13,8 @@ import (
 	// "flexsupport/views/components/selectbox"
 	// "flexsupport/views/components/textarea"
 	// "flexsupport/views/components/toast"
+	"flexsupport/internal/middleware"
 	"flexsupport/views/modules"
-  "flexsupport/internal/middleware"
 )
 
 templ BaseLayout(contents templ.Component) {
@@ -22,30 +22,17 @@ templ BaseLayout(contents templ.Component) {
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
-      
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<link rel="stylesheet" href="/assets/css/output.css" nonce={ middleware.GetTwNonce(ctx) }/>
-			<!-- @dialog.Script() -->
-			<!-- @calendar.Script() -->
-			<!-- @collapsible.Script() -->
-			<!-- @copybutton.Script() -->
-			<!-- @datepicker.Script() -->
-			<!-- @dropdown.Script() -->
-			<!-- @input.Script() -->
-			<!-- @label.Script() -->
-			<!-- @popover.Script() -->
-			<!-- @selectbox.Script() -->
-			<!-- @textarea.Script() -->
-			<!-- @toast.Script() -->
-			<script nonce={middleware.GetHtmxNonce(ctx) } src="/assets/js/htmx.min.js"></script>
-      <script nonce={middleware.GetResponseTargetsNonce(ctx)} src="/assets/js/response-targets.js"></script>
+			<link rel="stylesheet" href="/assets/css/output.min.css" nonce={ middleware.GetTwNonce(ctx) }/>
+			<script nonce={ middleware.GetHtmxNonce(ctx) } src="/assets/js/htmx.min.js"></script>
+			<script nonce={ middleware.GetResponseTargetsNonce(ctx) } src="/assets/js/response-targets.js"></script>
 			<script nonce={ middleware.GetAlpineNonce(ctx) } defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 			<title>Flex Support</title>
 		</head>
 		<body class="h-full" hx-ext="response-targets">
 			@modules.Navbar("dickhead")
 			<main class="container">
-      @contents
+				@contents
 			</main>
 		</body>
 	</html>

@@ -5,17 +5,18 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-	"flexsupport/views/pages"
-	"flexsupport/views/layouts"
 	"flexsupport/internal/models"
+	"flexsupport/views/layouts"
+	"flexsupport/views/pages"
+
+	"github.com/go-chi/chi/v5"
 )
 
 // Handler holds dependencies for HTTP handlers
-type Handler struct {
-}
+type Handler struct{}
 
 // NewHandler creates a new Handler instance
 func NewHandler() *Handler {
@@ -25,7 +26,7 @@ func NewHandler() *Handler {
 // Dashboard renders the main dashboard view
 func (h *Handler) Dashboard(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch real data from database
-
+	fmt.Println("Rendering dashboard")
 	page := pages.Dashboard(getMockTickets())
 	err := layouts.BaseLayout(page).Render(r.Context(), w)
 	if err != nil {
@@ -40,14 +41,50 @@ func (h *Handler) ListTickets(w http.ResponseWriter, r *http.Request) {
 	status := r.URL.Query().Get("status")
 	search := r.URL.Query().Get("search")
 
-	log.Printf("Listing tickets with status=%s, search=%s", status, search)
+	// TODO: Fetch real data from database
+	tickets := getMockTickets()
 
+	if status != "" {
+		tickets = filterTicketsByStatus(tickets, status)
+	}
+	if search != "" {
+		tickets = filterTicketsBySearch(tickets, search)
+	}
+
+	err := pages.TicketRows(tickets).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func filterTicketsByStatus(tickets []models.Ticket, status string) []models.Ticket {
+	result := make([]models.Ticket, 0)
+	if status != "" {
+		for _, ticket := range tickets {
+			if ticket.Status.String() == status {
+				result = append(result, ticket)
+			}
+		}
+	}
+	return result
+}
+
+func filterTicketsBySearch(tickets []models.Ticket, search string) []models.Ticket {
+	result := make([]models.Ticket, 0)
+	if search != "" {
+		for _, ticket := range tickets {
+			if strings.Contains(ticket.CustomerName, search) || strings.Contains(ticket.IssueDescription, search) {
+				result = append(result, ticket)
+			}
+		}
+	}
+	return result
 }
 
 // NewTicketForm renders the new ticket form
 func (h *Handler) NewTicketForm(w http.ResponseWriter, r *http.Request) {
-
-	page := pages.TicketForm(nil)
+	page := pages.TicketForm(models.Ticket{})
 	err := layouts.BaseLayout(page).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -82,7 +119,6 @@ func (h *Handler) ViewTicket(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch from database
 	ticket := getMockTicket(id)
 
-
 	page := pages.TicketPage(ticket)
 	err = layouts.BaseLayout(page).Render(r.Context(), w)
 	if err != nil {
@@ -104,15 +140,13 @@ func (h *Handler) EditTicketForm(w http.ResponseWriter, r *http.Request) {
 	// TODO: Fetch from database
 	ticket := getMockTicket(id)
 
-	
-	page := pages.TicketForm(&ticket)
+	page := pages.TicketForm(ticket)
 	err = layouts.BaseLayout(page).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	return
-
 }
 
 // UpdateTicket handles ticket updates
@@ -209,7 +243,6 @@ func (h *Handler) AddNote(w http.ResponseWriter, r *http.Request) {
 	</div>`, now, note)
 }
 
-
 // TechnicianTicketView shows the detailed technician view of a ticket
 
 // GetOpenTicketsCount returns the count of open tickets (htmx endpoint)
@@ -217,8 +250,6 @@ func (h *Handler) GetOpenTicketsCount(w http.ResponseWriter, r *http.Request) {
 	// TODO: Query database
 	fmt.Fprintf(w, "12")
 }
-
-
 
 func getMockTickets() []models.Ticket {
 	return []models.Ticket{
@@ -228,8 +259,8 @@ func getMockTickets() []models.Ticket {
 			Priority:         "high",
 			CustomerName:     "John Doe",
 			CustomerPhone:    "(555) 123-4567",
-			ItemType:       "Smartphone",
-			ItemModel:      "iPhone 13 Pro",
+			ItemType:         "Smartphone",
+			ItemModel:        "iPhone 13 Pro",
 			IssueDescription: "Cracked screen, needs replacement",
 			AssignedTo:       "Mike Tech",
 			DueDate:          timePtr(time.Now().Add(48 * time.Hour)),
@@ -240,8 +271,8 @@ func getMockTickets() []models.Ticket {
 			Priority:         "normal",
 			CustomerName:     "Jane Smith",
 			CustomerPhone:    "(555) 987-6543",
-			ItemType:       "Laptop",
-			ItemModel:      "MacBook Pro 2020",
+			ItemType:         "Laptop",
+			ItemModel:        "MacBook Pro 2020",
 			IssueDescription: "Battery not charging",
 			AssignedTo:       "Sarah Tech",
 		},
@@ -257,9 +288,9 @@ func getMockTicket(id int) models.Ticket {
 		CustomerName:     "John Doe",
 		CustomerPhone:    "(555) 123-4567",
 		CustomerEmail:    "john@example.com",
-		ItemType:       "Smartphone",
-		ItemBrand:      "Apple",
-		ItemModel:      "iPhone 13 Pro",
+		ItemType:         "Smartphone",
+		ItemBrand:        "Apple",
+		ItemModel:        "iPhone 13 Pro",
 		SerialNumber:     "ABC123456789",
 		IssueDescription: "Screen is completely shattered after being dropped. Touch functionality still works but glass is unsafe.",
 		EstimatedCost:    150.00,

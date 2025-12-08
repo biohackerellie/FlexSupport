@@ -58,7 +58,6 @@ func CSPMiddleware(next http.Handler) http.Handler {
 			nonceSet.Tw,
 			nonceSet.HtmxCSSHash)
 		w.Header().Set("Content-Security-Policy", cspHeader)
-		
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -103,6 +102,7 @@ func GetTwNonce(ctx context.Context) string {
 	nonceSet := GetNonces(ctx)
 	return nonceSet.Tw
 }
+
 func GetAlpineNonce(ctx context.Context) string {
 	nonceSet := GetNonces(ctx)
 	return nonceSet.Alpine

@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"net/http"
 	// "strings"
-
 	// "github.com/go-chi/chi/v5"
 	// "github.com/go-chi/chi/v5/middleware"
 	// "path/filepath"
@@ -15,7 +14,12 @@ import (
 //go:embed all:assets
 var Static embed.FS
 
+var AppDev string = "development"
+
 func AssetRouter() http.Handler {
+	if AppDev == "development" {
+		return http.FileServer(http.Dir("./static/assets"))
+	}
 	st, err := fs.Sub(Static, "assets")
 	if err != nil {
 		panic(err)
@@ -62,7 +66,6 @@ func AssetRouter() http.Handler {
 // 				http.NotFound(w, r)
 // 				return
 // 			}
-
 
 // 		w.Header().Set("Vary", "Accept-Encoding")
 // 		static.ServeHTTP(w, r)
