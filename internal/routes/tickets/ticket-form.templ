@@ -1,0 +1,281 @@
+package tickets
+
+import (
+	"flexsupport/internal/models"
+
+	"flexsupport/ui/components/button"
+	"flexsupport/ui/components/card"
+	"flexsupport/ui/components/input"
+	"flexsupport/ui/components/label"
+)
+
+var ItemTypes = []models.ItemType{
+	models.Boot,
+	models.Shoe,
+	models.Bag,
+	models.Other,
+}
+
+type TicketFormParams struct{}
+
+templ TicketForm(ticket models.Ticket) {
+	<div class="px-4 py-6 sm:px-0">
+		<!-- Page Header -->
+		<div class="mb-6">
+			<h2 class="text-2xl font-bold text-gray-900">
+				Create New Ticket
+			</h2>
+			<p class="mt-1 text-sm text-gray-600">Fill in the repair ticket details</p>
+		</div>
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<!-- Main Form -->
+			<div class="lg:col-span-2">
+				{{ postUrl := "/tickets" }}
+				<form hx-post={ postUrl } hx-swap="outerHTML" hx-target="this" id="ticket-form" class="space-y-6">
+					<!-- Customer Information -->
+					@card.Card() {
+						@card.Content() {
+							<h3 class="text-lg font-medium text-gray-900 mb-4">Customer Information</h3>
+							<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+								<div class="col-span-2" hx-target="this" hx-swap="outerHTML">
+									@label.Label(label.Props{
+										For:   "customer_name",
+										Class: "block text-sm font-medium text-gray-700",
+									}) {
+										Customer Name <span class="text-red-500">*</span>
+									}
+									@input.Input(input.Props{
+										ID:          "customer_name",
+										Type:        input.TypeText,
+										Placeholder: "John Doe",
+										Attributes: templ.Attributes{
+											"required": true,
+										},
+										Value: ticket.CustomerName,
+									})
+								</div>
+								<div>
+									<label for="customer_phone" class="block text-sm font-medium text-gray-700">
+										Phone Number <span class="text-red-500">*</span>
+									</label>
+									<input
+										type="tel"
+										name="customer_phone"
+										id="customer_phone"
+										required
+										value={ ticket.CustomerPhone }
+										class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										placeholder="(555) 123-4567"
+									/>
+								</div>
+								<div>
+									<label for="customer_email" class="block text-sm font-medium text-gray-700">
+										Email Address
+									</label>
+									<input
+										type="email"
+										name="customer_email"
+										id="customer_email"
+										value={ ticket.CustomerEmail }
+										class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										placeholder="john@example.com"
+									/>
+								</div>
+							</div>
+						}
+					}
+					<!-- Item Information -->
+					<div class="bg-white shadow rounded-lg">
+						<div class="px-4 py-5 sm:p-6">
+							<h3 class="text-lg font-medium text-gray-900 mb-4">Item Information</h3>
+							<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+								<div x-data="{ itemType: '{ ticket.ItemType }' }">
+									<label for="item_type" class="block text-sm font-medium text-gray-700">
+										Item Type <span class="text-red-500">*</span>
+									</label>
+									<select
+										name="item_type"
+										id="item_type"
+										required
+										x-model="itemType"
+										class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+									>
+										<option value="">Select item type</option>
+										for _, itemType := range ItemTypes {
+											<option value={ itemType } selected={ ticket.ItemType == itemType }>{ itemType }</option>
+										}
+									</select>
+									<div x-show="itemType === 'Other'" x-transition>
+										<label for="other_details" class="block text-sm font-medium text-gray-700">
+											Please describe the item
+										</label>
+										<input
+											type="text"
+											name="other_details"
+											id="other_details"
+											class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+											placeholder="Please describe the item"
+										/>
+									</div>
+								</div>
+								<div>
+									<label for="item_brand" class="block text-sm font-medium text-gray-700">
+										Brand
+									</label>
+									<input
+										type="text"
+										name="item_brand"
+										id="item_brand"
+										value={ ticket.ItemBrand }
+										class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										placeholder="Keen, Danner, etc."
+									/>
+								</div>
+								<div>
+									<label for="item_model" class="block text-sm font-medium text-gray-700">
+										Model
+									</label>
+									<input
+										type="text"
+										name="item_model"
+										id="item_model"
+										value={ ticket.ItemModel }
+										class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										placeholder=""
+									/>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Repair Details -->
+					<div class="bg-white shadow rounded-lg">
+						<div class="px-4 py-5 sm:p-6">
+							<h3 class="text-lg font-medium text-gray-900 mb-4">Repair Details</h3>
+							<div class="space-y-6">
+								<div>
+									<label for="issue_description" class="block text-sm font-medium text-gray-700">
+										Issue Description <span class="text-red-500">*</span>
+									</label>
+									<textarea
+										name="issue_description"
+										id="issue_description"
+										required
+										rows="4"
+										class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										placeholder="Describe the problem in detail..."
+									>{ ticket.IssueDescription }</textarea>
+								</div>
+								<div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+									<div>
+										<label for="priority" class="block text-sm font-medium text-gray-700">
+											Priority
+										</label>
+										<select
+											name="priority"
+											id="priority"
+											class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+										>
+											<option value="low" selected={ ticket.Priority == "low" }>Low</option>
+											<option value="normal" selected={ ticket.Priority == "normal" }>Normal</option>
+											<option value="high" selected={ ticket.Priority == "high" }>High</option>
+											<option value="urgent" selected={ ticket.Priority == "urgent" }>Urgent</option>
+										</select>
+									</div>
+									<div>
+										<label for="estimated_cost" class="block text-sm font-medium text-gray-700">
+											Estimated Cost
+										</label>
+										<div class="mt-1 relative rounded-md shadow-sm">
+											<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+												<span class="text-gray-500 sm:text-sm">$</span>
+											</div>
+											<input
+												type="number"
+												name="estimated_cost"
+												id="estimated_cost"
+												step="0.01"
+												min="0"
+												value={ ticket.EstimatedCost }
+												class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+												placeholder="0.00"
+											/>
+										</div>
+									</div>
+									<div>
+										<label for="due_date" class="block text-sm font-medium text-gray-700">
+											Due Date
+										</label>
+										<input
+											type="date"
+											name="due_date"
+											id="due_date"
+											value={ ticket.DueDate.Format("2006-01-02") }
+											class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										/>
+									</div>
+								</div>
+								<div>
+									<label for="internal_notes" class="block text-sm font-medium text-gray-700">
+										Internal Notes
+									</label>
+									<textarea
+										name="internal_notes"
+										id="internal_notes"
+										rows="3"
+										class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+										placeholder="Notes visible only to staff..."
+									>{ ticket.InternalNotes }</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Form Actions -->
+					<div class="flex justify-end space-x-3">
+						{{ backUrl := "/" }}
+						<a
+							href={ backUrl }
+							class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+						>
+							Cancel
+						</a>
+						@button.Button(button.Props{
+							Type: "submit",
+						}) {
+							Create Ticket
+						}
+					</div>
+				</form>
+			</div>
+			<!-- Sidebar with helpful info -->
+			<div class="lg:col-span-1">
+				<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+					<h4 class="text-sm font-medium text-blue-900 mb-2">Quick Tips</h4>
+					<ul class="text-sm text-blue-700 space-y-2">
+						<li>• Document any existing damage</li>
+						<li>• Set realistic due dates</li>
+						<li>• Take photos if necessary</li>
+					</ul>
+				</div>
+				<!-- if ticket != nil { -->
+				<!-- 	<div class="mt-6 bg-white shadow rounded-lg p-4"> -->
+				<!-- 		<h4 class="text-sm font-medium text-gray-900 mb-3">Ticket History</h4> -->
+				<!-- 		<div class="space-y-3"> -->
+				<!-- 			<div class="text-xs"> -->
+				<!-- 				<span class="text-gray-500">Created:</span> -->
+				<!-- 				<span class="text-gray-900">{ ticket.CreatedAt.Format("2006-01-02 15:04:05") }</span> -->
+				<!-- 			</div> -->
+				<!-- 			<div class="text-xs"> -->
+				<!-- 				<span class="text-gray-500">Last Updated:</span> -->
+				<!-- 				<span class="text-gray-900">{ ticket.UpdatedAt.Format("2006-01-02 15:04:05") }</span> -->
+				<!-- 			</div> -->
+				<!-- 			<div class="text-xs"> -->
+				<!-- 				<span class="text-gray-500">Created By:</span> -->
+				<!-- 				<span class="text-gray-900">{ ticket.CreatedBy }</span> -->
+				<!-- 			</div> -->
+				<!-- 		</div> -->
+				<!-- 	</div> -->
+				<!-- } -->
+			</div>
+		</div>
+	</div>
+}

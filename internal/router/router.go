@@ -1,6 +1,7 @@
 package router
 
 import (
+	"log/slog"
 	"net/http"
 
 	"flexsupport/internal/handlers"
@@ -8,6 +9,8 @@ import (
 	"flexsupport/static"
 
 	// "net/http"
+	"flexsupport/internal/routes/dashboard"
+	// "flexsupport/internal/routes/tickets"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -15,10 +18,11 @@ import (
 
 var AppDev string = "development"
 
-func NewRouter(h *handlers.Handler) *chi.Mux {
+func NewRouter(h *handlers.Handler, log *slog.Logger) *chi.Mux {
 	r := chi.NewMux()
 	// Dashboard
 
+	dbHandler := dashboard.NewHandler(log)
 	r.Handle("/assets/*",
 		disableCacheInDevMode(
 			http.StripPrefix("/assets/",
@@ -30,17 +34,18 @@ func NewRouter(h *handlers.Handler) *chi.Mux {
 		r.Use(
 			middleware.Logger,
 			middleware.Recoverer,
-			mw.CSPMiddleware,
+			// mw.CSPMiddleware,
+			mw.Logging(log),
 			mw.TextHTMLMiddleware,
 		)
-		r.Get("/", h.Dashboard)
+		r.Get("/", dbHandler.Get)
 		r.Route("/tickets", func(r chi.Router) {
-			r.Get("/", h.ListTickets)
-			r.Get("/new", h.NewTicketForm)
+			// r.Get("/", h.ListTickets)
+			// r.Get("/new", h.NewTicketForm)
 			r.Post("/", h.CreateTicket)
 			r.Get("/search", h.SearchTickets)
-			r.Get("/{id}", h.ViewTicket)
-			r.Get("/{id}/edit", h.EditTicketForm)
+			// r.Get("/{id}", h.ViewTicket)
+			// r.Get("/{id}/edit", h.EditTicketForm)
 			r.Post("/{id}", h.UpdateTicket)
 
 			// Ticket actions

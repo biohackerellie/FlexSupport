@@ -1,18 +1,41 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"flexsupport/internal/handlers"
-	"flexsupport/internal/router"
+	"io"
+	"log/slog"
 	"net/http"
+	"strings"
+
+	cfg "flexsupport/internal/config"
+	"flexsupport/internal/handlers"
+	"flexsupport/internal/lib/logger"
+	"flexsupport/internal/router"
 )
 
-func App() error {
+var log *slog.Logger
+
+func App(ctx context.Context, stdout io.Writer, getenv func(string, string) string) error {
+	config := cfg.New(getenv)
+	local := config.Environment != cfg.PROD
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	logLevel := config.LogLevel
+	if logLevel == "" {
+		logLevel = "debug"
+	}
+	logOptions := logger.LogOptions(strings.TrimSpace(strings.ToLower(logLevel)), config.VerboseLogging, local)
+	switch local {
+	case true:
+		log = slog.New(slog.NewTextHandler(stdout, logOptions))
+	default:
+		log = slog.New(slog.NewJSONHandler(stdout, logOptions))
+	}
 	h := handlers.NewHandler()
-	r := router.NewRouter(h)
-	
+	r := router.NewRouter(h, log)
+
 	fmt.Println("Starting server on :8080")
 	return http.ListenAndServe(":8080", r)
-
-
 }

@@ -4,11 +4,8 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/a-h/templ"
 )
 
 type key string
@@ -39,27 +36,22 @@ func CSPMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Create a new Nonces struct for every request when here.
 		// move to outside the handler to use the same nonces in all responses
-		nonceSet := Nonces{
-			Htmx:            generateRandomString(16),
-			ResponseTargets: generateRandomString(16),
-			Tw:              generateRandomString(16),
-			Alpine:          generateRandomString(16),
-			HtmxCSSHash:     "sha256-pgn1TCGZX6O77zDvy0oTODMOxemn0oj0LeCnQTRj7Kg=",
-		}
+		// nonceSet := Nonces{
+		// 	Htmx:            generateRandomString(16),
+		// 	ResponseTargets: generateRandomString(16),
+		// 	Tw:              generateRandomString(16),
+		// 	Alpine:          generateRandomString(16),
+		// 	HtmxCSSHash:     "sha256-pgn1TCGZX6O77zDvy0oTODMOxemn0oj0LeCnQTRj7Kg=",
+		// }
 
 		// set nonces in context
-		ctx := context.WithValue(r.Context(), NonceKey, nonceSet)
-		ctx = templ.WithNonce(ctx, nonceSet.ResponseTargets)
+		// ctx := context.WithValue(r.Context(), NonceKey, nonceSet)
+		// ctx = templ.WithNonce(ctx, nonceSet.ResponseTargets)
 		// insert the nonces into the content security policy header
-		cspHeader := fmt.Sprintf("default-src 'self'; script-src 'nonce-%s' 'nonce-%s' 'nonce-%s' ; style-src 'nonce-%s' '%s';",
-			nonceSet.Htmx,
-			nonceSet.ResponseTargets,
-			nonceSet.Alpine,
-			nonceSet.Tw,
-			nonceSet.HtmxCSSHash)
+		cspHeader := "default-src 'self'; script-src 'self' 'unsafe-inline' ; style-src 'self' 'unsafe-inline';"
 		w.Header().Set("Content-Security-Policy", cspHeader)
 
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r)
 	})
 }
 

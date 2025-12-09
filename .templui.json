@@ -1,5 +1,5 @@
 {
-  "componentsDir": "views/components",
+  "componentsDir": "ui/components",
   "utilsDir": "internal/utils",
   "moduleName": "flexsupport",
   "jsDir": "assets/js",

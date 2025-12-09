@@ -7,6 +7,7 @@ require (
 	github.com/a-h/templ v0.3.960
 	github.com/bold-commerce/go-shopify/v4 v4.7.0
 	github.com/go-chi/chi/v5 v5.0.11
+	github.com/joho/godotenv v1.5.1
 )
 
 require (

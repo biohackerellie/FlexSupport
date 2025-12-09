@@ -28,7 +28,7 @@ func logging(logger *slog.Logger, next http.Handler) http.Handler {
 		next.ServeHTTP(wrapped, r)
 		duration := time.Since(start)
 
-		logger.Info(
+		logger.Debug(
 			"handled request",
 			slog.String("method", r.Method),
 			slog.String("path", r.URL.Path),

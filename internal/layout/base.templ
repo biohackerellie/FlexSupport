@@ -1,0 +1,41 @@
+package layout
+
+import (
+	// "flexsupport/ui/components/calendar"
+	// "flexsupport/ui/components/collapsible"
+	// "flexsupport/ui/components/copybutton"
+	// "flexsupport/ui/components/datepicker"
+	// "flexsupport/ui/components/dialog"
+	// "flexsupport/ui/components/dropdown"
+	"flexsupport/ui/components/input"
+	"flexsupport/ui/components/label"
+	// "flexsupport/ui/components/popover"
+	// "flexsupport/ui/components/selectbox"
+	// "flexsupport/ui/components/textarea"
+	// "flexsupport/ui/components/toast"
+	// "flexsupport/internal/middleware"
+	"flexsupport/ui/modules"
+)
+
+templ BaseLayout(contents templ.Component) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<link rel="stylesheet" href="/assets/css/output.min.css"/>
+			<script src="/assets/js/htmx.min.js"></script>
+			<script src="/assets/js/response-targets.js"></script>
+			<script defer src="/assets/js/alpine.min.js"></script>
+			@input.Script()
+			@label.Script()
+			<title>Flex Support</title>
+		</head>
+		<body class="h-full" hx-ext="response-targets">
+			@modules.Navbar("dickhead")
+			<main class="container">
+				@contents
+			</main>
+		</body>
+	</html>
+}

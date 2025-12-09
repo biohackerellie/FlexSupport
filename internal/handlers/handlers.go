@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
+
+	// "strconv"
 	"strings"
 	"time"
 
 	"flexsupport/internal/models"
-	"flexsupport/views/layouts"
-	"flexsupport/views/pages"
+	// "flexsupport/ui/layouts"
+	// "flexsupport/ui/pages"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -23,40 +24,40 @@ func NewHandler() *Handler {
 	return &Handler{}
 }
 
-// Dashboard renders the main dashboard view
-func (h *Handler) Dashboard(w http.ResponseWriter, r *http.Request) {
-	// TODO: Fetch real data from database
-	fmt.Println("Rendering dashboard")
-	page := pages.Dashboard(getMockTickets())
-	err := layouts.BaseLayout(page).Render(r.Context(), w)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
+// // Dashboard renders the main dashboard view
+// func (h *Handler) Dashboard(w http.ResponseWriter, r *http.Request) {
+// 	// TODO: Fetch real data from database
+// 	fmt.Println("Rendering dashboard")
+// 	page := pages.Dashboard(getMockTickets())
+// 	err := layouts.BaseLayout(page).Render(r.Context(), w)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+// }
 
-// ListTickets handles the ticket listing page
-func (h *Handler) ListTickets(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement filtering based on query parameters
-	status := r.URL.Query().Get("status")
-	search := r.URL.Query().Get("search")
+// // ListTickets handles the ticket listing page
+// func (h *Handler) ListTickets(w http.ResponseWriter, r *http.Request) {
+// 	// TODO: Implement filtering based on query parameters
+// 	status := r.URL.Query().Get("status")
+// 	search := r.URL.Query().Get("search")
 
-	// TODO: Fetch real data from database
-	tickets := getMockTickets()
+// 	// TODO: Fetch real data from database
+// 	tickets := getMockTickets()
 
-	if status != "" {
-		tickets = filterTicketsByStatus(tickets, status)
-	}
-	if search != "" {
-		tickets = filterTicketsBySearch(tickets, search)
-	}
+// 	if status != "" {
+// 		tickets = filterTicketsByStatus(tickets, status)
+// 	}
+// 	if search != "" {
+// 		tickets = filterTicketsBySearch(tickets, search)
+// 	}
 
-	err := pages.TicketRows(tickets).Render(r.Context(), w)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
+// 	err := pages.TicketRows(tickets).Render(r.Context(), w)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+// }
 
 func filterTicketsByStatus(tickets []models.Ticket, status string) []models.Ticket {
 	result := make([]models.Ticket, 0)
@@ -82,16 +83,6 @@ func filterTicketsBySearch(tickets []models.Ticket, search string) []models.Tick
 	return result
 }
 
-// NewTicketForm renders the new ticket form
-func (h *Handler) NewTicketForm(w http.ResponseWriter, r *http.Request) {
-	page := pages.TicketForm(models.Ticket{})
-	err := layouts.BaseLayout(page).Render(r.Context(), w)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-}
-
 // CreateTicket handles ticket creation
 func (h *Handler) CreateTicket(w http.ResponseWriter, r *http.Request) {
 	// TODO: Parse form data
@@ -108,46 +99,46 @@ func (h *Handler) CreateTicket(w http.ResponseWriter, r *http.Request) {
 }
 
 // ViewTicket renders the ticket detail view
-func (h *Handler) ViewTicket(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid ticket ID", http.StatusBadRequest)
-		return
-	}
+// func (h *Handler) ViewTicket(w http.ResponseWriter, r *http.Request) {
+// 	idStr := chi.URLParam(r, "id")
+// 	id, err := strconv.Atoi(idStr)
+// 	if err != nil {
+// 		http.Error(w, "Invalid ticket ID", http.StatusBadRequest)
+// 		return
+// 	}
 
-	// TODO: Fetch from database
-	ticket := getMockTicket(id)
+// 	// TODO: Fetch from database
+// 	ticket := getMockTicket(id)
 
-	page := pages.TicketPage(ticket)
-	err = layouts.BaseLayout(page).Render(r.Context(), w)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	return
-}
+// 	page := pages.TicketPage(ticket)
+// 	err = layouts.BaseLayout(page).Render(r.Context(), w)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+// 	return
+// }
 
 // EditTicketForm renders the edit ticket form
-func (h *Handler) EditTicketForm(w http.ResponseWriter, r *http.Request) {
-	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.Error(w, "Invalid ticket ID", http.StatusBadRequest)
-		return
-	}
+// func (h *Handler) EditTicketForm(w http.ResponseWriter, r *http.Request) {
+// 	idStr := chi.URLParam(r, "id")
+// 	id, err := strconv.Atoi(idStr)
+// 	if err != nil {
+// 		http.Error(w, "Invalid ticket ID", http.StatusBadRequest)
+// 		return
+// 	}
 
-	// TODO: Fetch from database
-	ticket := getMockTicket(id)
+// 	// TODO: Fetch from database
+// 	ticket := getMockTicket(id)
 
-	page := pages.TicketForm(ticket)
-	err = layouts.BaseLayout(page).Render(r.Context(), w)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	return
-}
+// 	page := pages.TicketForm(ticket)
+// 	err = layouts.BaseLayout(page).Render(r.Context(), w)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+// 	return
+// }
 
 // UpdateTicket handles ticket updates
 func (h *Handler) UpdateTicket(w http.ResponseWriter, r *http.Request) {
@@ -263,7 +254,7 @@ func getMockTickets() []models.Ticket {
 			ItemModel:        "iPhone 13 Pro",
 			IssueDescription: "Cracked screen, needs replacement",
 			AssignedTo:       "Mike Tech",
-			DueDate:          timePtr(time.Now().Add(48 * time.Hour)),
+			DueDate:          time.Now().Add(48 * time.Hour),
 		},
 		{
 			ID:               1002,
@@ -295,7 +286,7 @@ func getMockTicket(id int) models.Ticket {
 		IssueDescription: "Screen is completely shattered after being dropped. Touch functionality still works but glass is unsafe.",
 		EstimatedCost:    150.00,
 		AssignedTo:       "Mike Tech",
-		DueDate:          &dueDate,
+		DueDate:          dueDate,
 		CreatedAt:        time.Now().Add(-24 * time.Hour),
 		UpdatedAt:        time.Now(),
 		CreatedBy:        "Front Desk",

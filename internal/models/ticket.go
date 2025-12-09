@@ -30,56 +30,56 @@ const (
 )
 
 type ItemType string
+
 const (
-	Boot ItemType = "boot"
-	Shoe ItemType = "shoe"
-	Bag ItemType = "bag"
+	Boot  ItemType = "boot"
+	Shoe  ItemType = "shoe"
+	Bag   ItemType = "bag"
 	Other ItemType = "other"
 )
 
 // Ticket represents a repair ticket in the system
 type Ticket struct {
-	ID       int64      `json:"id"`
-	Status   Status   `json:"status"`
-	Priority Priority `json:"priority"` // low, normal, high, urgent
-	ExternalTag string `json:"external_tag"`
-
+	ID          int64    `db:"id" json:"id"`
+	Status      Status   `db:"status" json:"status"`
+	Priority    Priority `db:"priority" json:"priority"` // low, normal, high, urgent
+	ExternalTag string   `db:"external_tag" json:"external_tag"`
 
 	// Customer information
-	CustomerName  string `json:"customer_name"`
-	CustomerPhone string `json:"customer_phone"`
-	CustomerEmail string `json:"customer_email"`
+	CustomerName  string `db:"customer_name" json:"customer_name"`
+	CustomerPhone string `db:"customer_phone" json:"customer_phone"`
+	CustomerEmail string `db:"customer_email" json:"customer_email"`
 
 	// Item information
-	ItemType   ItemType `json:"item_type"`
-	ItemBrand  string `json:"item_brand"`
-	ItemModel  string `json:"item_model"`
-	SerialNumber string `json:"serial_number"`
+	ItemType     ItemType `db:"item_type" json:"item_type"`
+	ItemBrand    string   `db:"item_brand" json:"item_brand"`
+	ItemModel    string   `db:"item_model" json:"item_model"`
+	SerialNumber string   `db:"serial_number" json:"serial_number"`
 
 	// Repair details
-	IssueDescription string  `json:"issue_description"`
-	InternalNotes    string  `json:"internal_notes"`
-	EstimatedCost    float64 `json:"estimated_cost"`
+	IssueDescription string  `db:"issue_description" json:"issue_description"`
+	InternalNotes    string  `db:"internal_notes" json:"internal_notes"`
+	EstimatedCost    float64 `db:"estimated_cost" json:"estimated_cost"`
 
 	// Assignment and scheduling
-	AssignedTo string     `json:"assigned_to"`
-	DueDate    *time.Time `json:"due_date"`
+	AssignedTo string    `db:"assigned_to" json:"assigned_to"`
+	DueDate    time.Time `db:"due_date" json:"due_date"`
 
 	// Metadata
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	CreatedBy string    `json:"created_by"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
+	CreatedBy string    `db:"created_by" json:"created_by"`
 
 	// Related data (loaded via joins)
-	Parts          []Part     `json:"parts,omitempty"`
-	Notes          []WorkNote `json:"notes,omitempty"`
-	TotalPartsCost float64    `json:"total_parts_cost"`
+	Parts          []Part     `db:"-" json:"parts,omitempty"`
+	Notes          []WorkNote `db:"-" json:"notes,omitempty"`
+	TotalPartsCost float64    `db:"-" json:"total_parts_cost"`
 }
 
 // Part represents a replacement part or material used in a repair
 type Part struct {
-	ID       int64       `json:"id"`
-	TicketID int64       `json:"ticket_id"`
+	ID       int64     `json:"id"`
+	TicketID int64     `json:"ticket_id"`
 	Name     string    `json:"name"`
 	Quantity int       `json:"quantity"`
 	Cost     float64   `json:"cost"`
@@ -89,8 +89,8 @@ type Part struct {
 
 // WorkNote represents a work log entry or note on a ticket
 type WorkNote struct {
-	ID        int64       `json:"id"`
-	TicketID  int64       `json:"ticket_id"`
+	ID        int64     `json:"id"`
+	TicketID  int64     `json:"ticket_id"`
 	Content   string    `json:"content"`
 	Author    string    `json:"author"`
 	Timestamp time.Time `json:"timestamp"`
@@ -98,7 +98,7 @@ type WorkNote struct {
 
 // Customer represents customer information (for future use)
 type Customer struct {
-	ID          int64       `json:"id"`
+	ID          int64     `json:"id"`
 	Name        string    `json:"name"`
 	Phone       string    `json:"phone"`
 	Email       string    `json:"email"`
@@ -108,7 +108,7 @@ type Customer struct {
 
 // Technician represents a repair technician user
 type Technician struct {
-	ID          int64    `json:"id"`
+	ID          int64  `json:"id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	ActiveJobs  int    `json:"active_jobs"`
@@ -166,8 +166,5 @@ func (t *Ticket) TotalCost() float64 {
 
 // IsOverdue checks if the ticket is past its due date
 func (t *Ticket) IsOverdue() bool {
-	if t.DueDate == nil {
-		return false
-	}
-	return time.Now().After(*t.DueDate) && t.Status != "completed"
+	return time.Now().After(t.DueDate) && t.Status != "completed"
 }
