@@ -7,6 +7,7 @@ import (
 
 	"flexsupport/internal/layout"
 	"flexsupport/internal/models"
+	"flexsupport/internal/utils"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -38,8 +39,10 @@ func (h handler) Get(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	isMobile := utils.IsMobileUA(r.UserAgent())
+	h.log.Debug("isMobile", "isMobile", isMobile)
 
-	v := layout.Handler(Dashboard(tickets))
+	v := layout.Handler(Dashboard(tickets, isMobile))
 	v.ServeHTTP(w, r)
 }
 

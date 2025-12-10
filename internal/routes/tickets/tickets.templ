@@ -150,6 +150,6 @@ templ TicketsPage(tickets []models.Ticket, term, status string) {
 				</div>
 			}
 		}
-		@tables.TicketsTable(tickets)
+		@tables.TicketsTable(tickets, false)
 	</div>
 }

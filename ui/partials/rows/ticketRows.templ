@@ -8,41 +8,66 @@ import (
 	"flexsupport/ui/components/table"
 )
 
-templ TicketRows(tickets []models.Ticket) {
-	for _, ticket := range tickets {
-		{{ ticketUrl := fmt.Sprintf("/tickets/%d", ticket.ID) }}
-		@table.Row() {
-			@table.Cell() {
-				<a href={ ticketUrl } class="text-blue-600 hover:text-blue-900">{ ticket.ID }</a>
-			}
-			@table.Cell() {
-				<div class="text-sm font-medium text-primary-foreground">{ ticket.CustomerName }</div>
-				<div class="text-sm ">{ ticket.CustomerEmail }</div>
-			}
-			@table.Cell() {
-				{ ticket.ItemType }
-			}
-			@table.Cell() {
-				<span
-					class={ utils.TwMerge("px-2 inline-flex text-xs leading-5 font-semibold rounded-full", ticket.StatusClass()) }
-				>
-					{ ticket.StatusDisplay() }
-				</span>
-			}
-			@table.Cell() {
-				if ticket.AssignedTo != "" {
-					{ ticket.AssignedTo }
-				} else {
-					<span class="text-gray-400">Unassigned</span>
+templ TicketRows(tickets []models.Ticket, isMobile bool) {
+	if isMobile {
+		@MobileTicketRows(tickets)
+	} else {
+		for _, ticket := range tickets {
+			{{ ticketUrl := fmt.Sprintf("/tickets/%d", ticket.ID) }}
+			@table.Row() {
+				@table.Cell() {
+					<a href={ ticketUrl } class="text-blue-600 hover:text-blue-900">{ ticket.ID }</a>
 				}
-			}
-			@table.Cell() {
-				{ ticket.DueDate.Format("2006-01-02") }
-			}
-			@table.Cell() {
-				<a href={ fmt.Sprintf("/tickets/%d/edit", ticket.ID) } class="text-blue-600 hover:text-blue-900">Edit</a>
-				<a href={ ticketUrl } class="text-gray-600 hover:text-gray-900">View</a>
+				@table.Cell() {
+					<div class="text-sm font-medium text-primary-foreground">{ ticket.CustomerName }</div>
+					<div class="text-sm ">{ ticket.CustomerEmail }</div>
+				}
+				@table.Cell() {
+					{ ticket.ItemType }
+				}
+				@table.Cell() {
+					<span
+						class={ utils.TwMerge("px-2 inline-flex text-xs leading-5 font-semibold rounded-full", ticket.StatusClass()) }
+					>
+						{ ticket.StatusDisplay() }
+					</span>
+				}
+				@table.Cell() {
+					if ticket.AssignedTo != "" {
+						{ ticket.AssignedTo }
+					} else {
+						<span class="text-gray-400">Unassigned</span>
+					}
+				}
+				@table.Cell() {
+					{ ticket.DueDate.Format("2006-01-02") }
+				}
+				@table.Cell() {
+					<a href={ fmt.Sprintf("/tickets/%d/edit", ticket.ID) } class="text-blue-600 hover:text-blue-900">Edit</a>
+					<a href={ ticketUrl } class="text-gray-600 hover:text-gray-900">View</a>
+				}
 			}
 		}
 	}
+}
+
+templ MobileTicketRows(tickets []models.Ticket) {
+	<div class="divide-y divide-gray-200 p-2 overfloy-y-scroll">
+		for _, ticket := range tickets {
+			{{ ticketUrl := fmt.Sprintf("/tickets/%d", ticket.ID) }}
+			<li class="p-3 sm:p-4">
+				<div class="flex items-center space-x-4">
+					<div class="flex-1 min-w-0">
+						<p class="text-sm font-medium text-gray-900 truncate">
+							<a href={ ticketUrl } class="text-blue-600 hover:text-blue-900">{ ticket.ID }</a>
+						</p>
+						<p class="text-sm text-gray-500 truncate">{ ticket.CustomerName }</p>
+					</div>
+					<div class={ utils.TwMerge("inline-flex items-center px-2 rounded-md text-base font-semibold ", ticket.StatusClass()) }>
+						{ ticket.StatusDisplay() }
+					</div>
+				</div>
+			</li>
+		}
+	</div>
 }

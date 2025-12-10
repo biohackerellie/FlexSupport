@@ -12,6 +12,7 @@ import (
 	// "flexsupport/ui/components/popover"
 	// "flexsupport/ui/components/selectbox"
 	// "flexsupport/ui/components/textarea"
+	"flexsupport/ui/components/dialog"
 	// "flexsupport/ui/components/toast"
 	// "flexsupport/internal/middleware"
 	"flexsupport/ui/components/navbar"
@@ -29,6 +30,7 @@ templ BaseLayout(contents templ.Component) {
 			<script defer src="/assets/js/alpine.min.js"></script>
 			@input.Script()
 			@label.Script()
+			@dialog.Script()
 			<script nonce={ templ.GetNonce(ctx) }>
 				(function() {
 					// Get current theme preference (system, light, or dark)

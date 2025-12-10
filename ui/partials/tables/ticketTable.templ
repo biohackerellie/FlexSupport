@@ -7,49 +7,55 @@ import (
 	"flexsupport/ui/components/table"
 )
 
-templ TicketsTable(tickets []models.Ticket) {
+templ TicketsTable(tickets []models.Ticket, isMobile bool) {
 	<div
 		class=" shadow rounded-lg overflow-hidden"
 		hx-get="/tickets"
 		hx-target="#ticket-list"
-		hx-trigger="load, every 30s"
+		hx-trigger="load"
 		hx-swap="innerHTML"
 	>
-		@table.Table(table.Props{
-			Class: "min-w-full ",
-		}) {
-			@table.Header() {
-				@table.Row() {
-					@table.Head() {
-						Ticket #
-					}
-					@table.Head() {
-						Customer
-					}
-					@table.Head() {
-						Item
-					}
-					@table.Head() {
-						Status
-					}
-					@table.Head() {
-						Assigned To
-					}
-					@table.Head() {
-						Due Date
-					}
-					@table.Head() {
-						Actions
+		if isMobile {
+			<div id="ticket-list">
+				@rows.TicketRows(tickets, isMobile)
+			</div>
+		} else {
+			@table.Table(table.Props{
+				Class: "min-w-full ",
+			}) {
+				@table.Header() {
+					@table.Row() {
+						@table.Head() {
+							Ticket #
+						}
+						@table.Head() {
+							Customer
+						}
+						@table.Head() {
+							Item
+						}
+						@table.Head() {
+							Status
+						}
+						@table.Head() {
+							Assigned To
+						}
+						@table.Head() {
+							Due Date
+						}
+						@table.Head() {
+							Actions
+						}
 					}
 				}
-			}
-			@table.Body(table.BodyProps{
-				ID: "ticket-list",
-			}) {
-				@rows.TicketRows(tickets)
-			}
-			if len(tickets) == 0 {
-				<tr><td colspan="7">No Tickets</td></tr>
+				@table.Body(table.BodyProps{
+					ID: "ticket-list",
+				}) {
+					@rows.TicketRows(tickets, isMobile)
+				}
+				if len(tickets) == 0 {
+					<tr><td colspan="7">No Tickets</td></tr>
+				}
 			}
 		}
 	</div>

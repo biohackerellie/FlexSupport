@@ -7,6 +7,7 @@ import (
 
 	"flexsupport/internal/layout"
 	"flexsupport/internal/models"
+	"flexsupport/internal/utils"
 	"flexsupport/ui/partials/rows"
 
 	"github.com/go-chi/chi/v5"
@@ -50,9 +51,10 @@ func (h handler) Search(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	isMobile := utils.IsMobileUA(r.UserAgent())
 	switch isHTMX(r) {
 	case true:
-		err = rows.TicketRows(tickets).Render(r.Context(), w)
+		err = rows.TicketRows(tickets, isMobile).Render(r.Context(), w)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

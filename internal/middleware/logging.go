@@ -36,6 +36,7 @@ func logging(logger *slog.Logger, next http.Handler) http.Handler {
 			slog.Int("status", wrapped.statusCode),
 			slog.String("remote_addr", r.RemoteAddr),
 			slog.String("x-forwarded-for", r.Header.Get("X-Forwarded-For")),
+			slog.String("user_agent", r.UserAgent()),
 		)
 	})
 }

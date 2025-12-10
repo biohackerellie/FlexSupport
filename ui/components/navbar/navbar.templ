@@ -1,27 +1,75 @@
 package navbar
 
+import (
+	"flexsupport/ui/components/sheet"
+
+	"flexsupport/ui/components/icon"
+)
+
 templ Navbar(userName string) {
 	<nav class="py-1 border-b">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="flex justify-between h-16">
-				<div class="flex">
-					<div class="shrink-0 flex items-center">
-						<h1 class="text-xl font-bold text-primary">FlexSupport</h1>
-					</div>
-					<div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-						<a href="/" class="border-transparent text-primary-foreground hover:border-gray-300 hover:text-primary-foreground/60 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-							Dashboard
-						</a>
-						<a href="/tickets/new" class="border-transparent text-primary-foreground hover:border-gray-300 hover:text-primary-foreground/60 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-							New Ticket
-						</a>
-					</div>
+		<div class="px-6 flex justify-between items-center relative">
+			<div class="flex">
+				@NavbarMobileMenu()
+				<div class="shrink-0 flex items-center">
+					<h1 class="text-xl font-bold text-primary">FlexSupport</h1>
 				</div>
-				<div class="flex items-center">
-					<span class="text-sm text-gray-700">{ userName }</span>
-					@ThemeSwitcher()
+				<div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+					<a href="/" class="border-transparent text-foreground  hover:border-gray-300 hover:text-foreground/60 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+						Dashboard
+					</a>
+					<a href="/tickets/new" class="border-transparent text-foreground  hover:border-gray-300 hover:text-foreground/60 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+						New Ticket
+					</a>
 				</div>
+			</div>
+			<div class="flex items-center">
+				<span class="text-sm text-gray-700">{ userName }</span>
+				@ThemeSwitcher()
 			</div>
 		</div>
 	</nav>
+}
+
+templ NavbarMobileMenu() {
+	@sheet.Sheet(sheet.Props{
+		Side: sheet.SideLeft,
+	}) {
+		@sheet.Trigger() {
+			<button
+				class="mr-2 lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+			>
+				@icon.Menu()
+			</button>
+		}
+		@sheet.Content(sheet.ContentProps{
+			Class: "!p-4",
+		}) {
+			<div class="flex-1 overflow-y-auto">
+				<div class="space-y-4">
+					<div class="pb-4">
+						<h3 class="text-sm font-bold text-gray-600 dark:text-gray-400">Menu</h3>
+						<ul class="mt-2 space-y-1">
+							<li>
+								<a
+									href="/"
+									class="text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+								>
+									<span>Dashboard</span>
+								</a>
+							</li>
+							<li>
+								<a
+									href="/tickets/new"
+									class="text-sm inline-flex items-center px-3 py-2 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 w-full"
+								>
+									<span>New Ticket</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		}
+	}
 }
