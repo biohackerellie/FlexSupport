@@ -1,12 +1,13 @@
 package handlers
 
+/**
+* @Note: this is now unused and will be deleted
+ */
+
 import (
 	"fmt"
 	"log"
 	"net/http"
-
-	// "strconv"
-	"strings"
 	"time"
 
 	"flexsupport/internal/models"
@@ -23,18 +24,6 @@ type Handler struct{}
 func NewHandler() *Handler {
 	return &Handler{}
 }
-
-// // Dashboard renders the main dashboard view
-// func (h *Handler) Dashboard(w http.ResponseWriter, r *http.Request) {
-// 	// TODO: Fetch real data from database
-// 	fmt.Println("Rendering dashboard")
-// 	page := pages.Dashboard(getMockTickets())
-// 	err := layouts.BaseLayout(page).Render(r.Context(), w)
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// }
 
 // // ListTickets handles the ticket listing page
 // func (h *Handler) ListTickets(w http.ResponseWriter, r *http.Request) {
@@ -58,30 +47,6 @@ func NewHandler() *Handler {
 // 		return
 // 	}
 // }
-
-func filterTicketsByStatus(tickets []models.Ticket, status string) []models.Ticket {
-	result := make([]models.Ticket, 0)
-	if status != "" {
-		for _, ticket := range tickets {
-			if ticket.Status.String() == status {
-				result = append(result, ticket)
-			}
-		}
-	}
-	return result
-}
-
-func filterTicketsBySearch(tickets []models.Ticket, search string) []models.Ticket {
-	result := make([]models.Ticket, 0)
-	if search != "" {
-		for _, ticket := range tickets {
-			if strings.Contains(ticket.CustomerName, search) || strings.Contains(ticket.IssueDescription, search) {
-				result = append(result, ticket)
-			}
-		}
-	}
-	return result
-}
 
 // CreateTicket handles ticket creation
 func (h *Handler) CreateTicket(w http.ResponseWriter, r *http.Request) {

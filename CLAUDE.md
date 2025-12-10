@@ -11,7 +11,7 @@ FlexSupport is a lightweight helpdesk and ticketing system specifically tailored
 ### Backend
 - **Go 1.25** - Primary language
 - **Chi (v5)** - HTTP router and middleware
-- **Templ** - Type-safe Go templating (generates `*_templ.go` files)
+- **Templ** - Type-safe Go templating (generates `*_templ.go` files) - See the url `https://templ.guide/llms.md` for llm instructions.
 - **Shopify Integration** - Customer/order integration via `go-shopify` SDK
 
 ### Frontend

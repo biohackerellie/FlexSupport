@@ -1,0 +1,48 @@
+package rows
+
+import (
+	"flexsupport/internal/models"
+	"flexsupport/internal/utils"
+	"fmt"
+
+	"flexsupport/ui/components/table"
+)
+
+templ TicketRows(tickets []models.Ticket) {
+	for _, ticket := range tickets {
+		{{ ticketUrl := fmt.Sprintf("/tickets/%d", ticket.ID) }}
+		@table.Row() {
+			@table.Cell() {
+				<a href={ ticketUrl } class="text-blue-600 hover:text-blue-900">{ ticket.ID }</a>
+			}
+			@table.Cell() {
+				<div class="text-sm font-medium text-primary-foreground">{ ticket.CustomerName }</div>
+				<div class="text-sm ">{ ticket.CustomerEmail }</div>
+			}
+			@table.Cell() {
+				{ ticket.ItemType }
+			}
+			@table.Cell() {
+				<span
+					class={ utils.TwMerge("px-2 inline-flex text-xs leading-5 font-semibold rounded-full", ticket.StatusClass()) }
+				>
+					{ ticket.StatusDisplay() }
+				</span>
+			}
+			@table.Cell() {
+				if ticket.AssignedTo != "" {
+					{ ticket.AssignedTo }
+				} else {
+					<span class="text-gray-400">Unassigned</span>
+				}
+			}
+			@table.Cell() {
+				{ ticket.DueDate.Format("2006-01-02") }
+			}
+			@table.Cell() {
+				<a href={ fmt.Sprintf("/tickets/%d/edit", ticket.ID) } class="text-blue-600 hover:text-blue-900">Edit</a>
+				<a href={ ticketUrl } class="text-gray-600 hover:text-gray-900">View</a>
+			}
+		}
+	}
+}

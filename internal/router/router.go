@@ -4,13 +4,13 @@ import (
 	"log/slog"
 	"net/http"
 
-	"flexsupport/internal/handlers"
 	mw "flexsupport/internal/middleware"
 	"flexsupport/static"
 
 	// "net/http"
+	"flexsupport/internal/routes/api"
 	"flexsupport/internal/routes/dashboard"
-	// "flexsupport/internal/routes/tickets"
+	"flexsupport/internal/routes/tickets"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -18,11 +18,10 @@ import (
 
 var AppDev string = "development"
 
-func NewRouter(h *handlers.Handler, log *slog.Logger) *chi.Mux {
+func NewRouter(log *slog.Logger) *chi.Mux {
 	r := chi.NewMux()
 	// Dashboard
 
-	dbHandler := dashboard.NewHandler(log)
 	r.Handle("/assets/*",
 		disableCacheInDevMode(
 			http.StripPrefix("/assets/",
@@ -38,28 +37,10 @@ func NewRouter(h *handlers.Handler, log *slog.Logger) *chi.Mux {
 			mw.Logging(log),
 			mw.TextHTMLMiddleware,
 		)
-		r.Get("/", dbHandler.Get)
-		r.Route("/tickets", func(r chi.Router) {
-			// r.Get("/", h.ListTickets)
-			// r.Get("/new", h.NewTicketForm)
-			r.Post("/", h.CreateTicket)
-			r.Get("/search", h.SearchTickets)
-			// r.Get("/{id}", h.ViewTicket)
-			// r.Get("/{id}/edit", h.EditTicketForm)
-			r.Post("/{id}", h.UpdateTicket)
-
-			// Ticket actions
-			r.Post("/{id}/status", h.UpdateTicketStatus)
-			r.Post("/{id}/parts", h.AddPart)
-			r.Delete("/{id}/parts/{partId}", h.DeletePart)
-			r.Post("/{id}/notes", h.AddNote)
-		})
+		dashboard.Mount(r, dashboard.NewHandler(log, dashboard.NewService(log)))
+		tickets.Mount(r, tickets.NewHandler(log, tickets.NewService(log)))
 	})
-
-	// API endpoints (for htmx)
-	r.Route("/api", func(r chi.Router) {
-		r.Get("/stats/open", h.GetOpenTicketsCount)
-	})
+	api.Mount(r, api.NewHandler(log, api.NewService(log)))
 
 	return r
 }

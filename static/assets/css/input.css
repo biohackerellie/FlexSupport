@@ -75,7 +75,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
   /* ::selection { */
   /*   @apply bg-selection text-selection-foreground; */
@@ -85,16 +85,16 @@
   }
 }
 
-/* Smooth transitions for htmx swaps */
-/* .htmx-swapping { */
-/*     opacity: 0; */
-/*     transition: opacity 200ms ease-out; */
-/* } */
+Smooth transitions for htmx swaps
+.htmx-swapping {
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+}
 
-/* Loading indicator for htmx requests */
-/* .htmx-request .htmx-indicator { */
-/*     display: inline-block; */
-/* } */
+Loading indicator for htmx requests
+.htmx-request .htmx-indicator {
+    display: inline-block;
+}
 
 /* .htmx-indicator { */
 /*     display: none; */
@@ -113,8 +113,39 @@
 }
 
 @layer utilities {
+
+  .step {
+    counter-increment: step;
+  }
+
+  .step:before {
+    @apply md:absolute w-8 h-8 md:w-9 md:h-9 bg-muted rounded-full font-mono font-medium text-center text-base inline-flex items-center justify-center -indent-px border-4 mr-2 border-background;
+    @apply md:ml-[-50px] md:mt-[-4px];
+    content: counter(step);
+  }
+
+  .chunk-container {
+    @apply shadow-none;
+  }
+
+  .chunk-container::after {
+    content: "";
+    @apply absolute -inset-4 shadow-xl rounded-xl border;
+  }
   .border-grid {
     @apply border-border/50 dark:border-border border-dashed;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
 
   .container-wrapper {

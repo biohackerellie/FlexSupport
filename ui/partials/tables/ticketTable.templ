@@ -1,0 +1,56 @@
+package tables
+
+import (
+	"flexsupport/internal/models"
+	"flexsupport/ui/partials/rows"
+
+	"flexsupport/ui/components/table"
+)
+
+templ TicketsTable(tickets []models.Ticket) {
+	<div
+		class=" shadow rounded-lg overflow-hidden"
+		hx-get="/tickets"
+		hx-target="#ticket-list"
+		hx-trigger="load, every 30s"
+		hx-swap="innerHTML"
+	>
+		@table.Table(table.Props{
+			Class: "min-w-full ",
+		}) {
+			@table.Header() {
+				@table.Row() {
+					@table.Head() {
+						Ticket #
+					}
+					@table.Head() {
+						Customer
+					}
+					@table.Head() {
+						Item
+					}
+					@table.Head() {
+						Status
+					}
+					@table.Head() {
+						Assigned To
+					}
+					@table.Head() {
+						Due Date
+					}
+					@table.Head() {
+						Actions
+					}
+				}
+			}
+			@table.Body(table.BodyProps{
+				ID: "ticket-list",
+			}) {
+				@rows.TicketRows(tickets)
+			}
+			if len(tickets) == 0 {
+				<tr><td colspan="7">No Tickets</td></tr>
+			}
+		}
+	</div>
+}

@@ -1,18 +1,18 @@
-package dashboard
+package tickets
 
 import (
 	"flexsupport/internal/models"
-	"flexsupport/ui/components/card"
 	"flexsupport/ui/partials/tables"
 	"flexsupport/ui/partials/search"
+	"flexsupport/ui/components/card"
 )
 
-templ Dashboard(tickets []models.Ticket) {
-	<div class="container px-4 py-6 sm:px-0">
+templ TicketsPage(tickets []models.Ticket, term, status string) {
+	<div class="px-4 py-6 sm:px-0">
 		<!-- Page Header -->
 		<div class="mb-6">
-			<h2 class="text-2xl font-bold">Ticket Dashboard</h2>
-			<p class="mt-1 text-sm ">Manage and track repair tickets</p>
+			<h2 class="text-2xl font-bold text-gray-900">Ticket Dashboard</h2>
+			<p class="mt-1 text-sm text-gray-600">Manage and track repair tickets</p>
 		</div>
 		<!-- Stats Cards -->
 		<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
@@ -33,9 +33,9 @@ templ Dashboard(tickets []models.Ticket) {
 						</div>
 						<div class="ml-5 w-0 flex-1">
 							<dl>
-								<dt class="text-sm font-medium  truncate">Open Tickets</dt>
+								<dt class="text-sm font-medium text-gray-500 truncate">Open Tickets</dt>
 								<dd
-									class="text-2xl font-semibold "
+									class="text-2xl font-semibold text-gray-900"
 									hx-get="/api/stats/open"
 									hx-trigger="load, every 30s"
 									hx-target="#open-tickets"
@@ -52,7 +52,7 @@ templ Dashboard(tickets []models.Ticket) {
 					<div class="flex items-center">
 						<div class="shrink-0">
 							<div class="rounded-md bg-yellow-500 p-3">
-								<svg class="h-6 w-6 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path
 										stroke-linecap="round"
 										stroke-linejoin="round"
@@ -64,9 +64,9 @@ templ Dashboard(tickets []models.Ticket) {
 						</div>
 						<div class="ml-5 w-0 flex-1">
 							<dl>
-								<dt class="text-sm font-medium truncate">In Progress</dt>
+								<dt class="text-sm font-medium text-gray-500 truncate">In Progress</dt>
 								<dd
-									class="text-2xl font-semibold "
+									class="text-2xl font-semibold text-gray-900"
 									hx-get="/api/stats/inprogress"
 									hx-trigger="load, every 30s"
 									hx-target="#inprogress-tickets"
@@ -95,9 +95,9 @@ templ Dashboard(tickets []models.Ticket) {
 						</div>
 						<div class="ml-5 w-0 flex-1">
 							<dl>
-								<dt class="text-sm font-medium  truncate">Overdue</dt>
+								<dt class="text-sm font-medium text-gray-500 truncate">Overdue</dt>
 								<dd
-									class="text-2xl font-semibold "
+									class="text-2xl font-semibold text-gray-900"
 									hx-get="/api/stats/overdue"
 									hx-trigger="load, every 30s"
 									hx-target="#overdue-tickets"
@@ -140,7 +140,7 @@ templ Dashboard(tickets []models.Ticket) {
 		@card.Card() {
 			@card.Content() {
 				<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-					@search.SearchTickets("", "")
+					@search.SearchTickets(term, status)
 					<a
 						href="/tickets/new"
 						class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

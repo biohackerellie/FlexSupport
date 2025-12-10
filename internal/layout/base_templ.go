@@ -22,7 +22,7 @@ import (
 	// "flexsupport/ui/components/textarea"
 	// "flexsupport/ui/components/toast"
 	// "flexsupport/internal/middleware"
-	"flexsupport/ui/modules"
+	"flexsupport/ui/components/navbar"
 )
 
 func BaseLayout(contents templ.Component) templ.Component {
@@ -58,15 +58,28 @@ func BaseLayout(contents templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<title>Flex Support</title></head><body class=\"h-full\" hx-ext=\"response-targets\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script nonce=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = modules.Navbar("dickhead").Render(ctx, templ_7745c5c3_Buffer)
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(templ.GetNonce(ctx))
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/layout/base.templ`, Line: 32, Col: 38}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<main class=\"container\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\">\n\t\t\t\t(function() {\n\t\t\t\t\t// Get current theme preference (system, light, or dark)\n\t\t\t\t\tfunction getThemePreference() {\n\t\t\t\t\t\treturn localStorage.getItem('themePreference') || 'system';\n\t\t\t\t\t}\n\t\t\t\t\t\n\t\t\t\t\t// Apply theme based on preference\n\t\t\t\t\tconst preference = getThemePreference();\n\t\t\t\t\tlet isDark = false;\n\t\t\t\t\t\n\t\t\t\t\tif (preference === 'system') {\n\t\t\t\t\t\t// Use system preference\n\t\t\t\t\t\tisDark = window.matchMedia('(prefers-color-scheme: dark)').matches;\n\t\t\t\t\t} else {\n\t\t\t\t\t\t// Use explicit preference\n\t\t\t\t\t\tisDark = preference === 'dark';\n\t\t\t\t\t}\n\t\t\t\t\t\n\t\t\t\t\t// Apply theme immediately to prevent flash\n\t\t\t\t\tif (isDark) {\n\t\t\t\t\t\tdocument.documentElement.classList.add('dark');\n\t\t\t\t\t}\n\t\t\t\t})();\n\t\t\t</script><title>Flex Support</title></head><body class=\"h-full transition-colors duration-300\" hx-ext=\"response-targets\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = navbar.Navbar("dickhead").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<main class=\"container-wrapper\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -74,7 +87,7 @@ func BaseLayout(contents templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</main></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</main></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

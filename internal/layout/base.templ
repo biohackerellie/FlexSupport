@@ -14,7 +14,7 @@ import (
 	// "flexsupport/ui/components/textarea"
 	// "flexsupport/ui/components/toast"
 	// "flexsupport/internal/middleware"
-	"flexsupport/ui/modules"
+	"flexsupport/ui/components/navbar"
 )
 
 templ BaseLayout(contents templ.Component) {
@@ -29,11 +29,36 @@ templ BaseLayout(contents templ.Component) {
 			<script defer src="/assets/js/alpine.min.js"></script>
 			@input.Script()
 			@label.Script()
+			<script nonce={ templ.GetNonce(ctx) }>
+				(function() {
+					// Get current theme preference (system, light, or dark)
+					function getThemePreference() {
+						return localStorage.getItem('themePreference') || 'system';
+					}
+					
+					// Apply theme based on preference
+					const preference = getThemePreference();
+					let isDark = false;
+					
+					if (preference === 'system') {
+						// Use system preference
+						isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+					} else {
+						// Use explicit preference
+						isDark = preference === 'dark';
+					}
+					
+					// Apply theme immediately to prevent flash
+					if (isDark) {
+						document.documentElement.classList.add('dark');
+					}
+				})();
+			</script>
 			<title>Flex Support</title>
 		</head>
-		<body class="h-full" hx-ext="response-targets">
-			@modules.Navbar("dickhead")
-			<main class="container">
+		<body class="h-full transition-colors duration-300" hx-ext="response-targets">
+			@navbar.Navbar("dickhead")
+			<main class="container-wrapper">
 				@contents
 			</main>
 		</body>

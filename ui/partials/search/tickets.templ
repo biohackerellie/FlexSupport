@@ -1,0 +1,45 @@
+package search
+
+import "flexsupport/ui/components/input"
+
+templ SearchTickets(term, status string) {
+	<span class="htmx-indicator">
+		<img src="/assets/icons/loader.svg" class="size-4 animate-spin" alt="Loading..."/> Loading...
+	</span>
+	<div class="flex-1">
+		@input.Input(input.Props{
+			Type:        input.TypeText,
+			ID:          "search",
+			Name:        "search",
+			Value:       term,
+			Placeholder: "Search tickets...",
+			Attributes: templ.Attributes{
+				"hx-get":       "/tickets",
+				"hx-trigger":   "keyup changed delay:300ms",
+				"hx-target":    "#ticket-list",
+				"hx-indicator": ".htmx-indicator",
+				"hx-replace":   "innerHTML",
+			},
+		})
+	</div>
+	<div class="flex gap-2">
+		<select
+			name="status"
+			id="status"
+			class="block w-full pl-3 pr-10 py-2 text-base border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+			hx-get="/tickets"
+			value={ status }
+			hx-trigger="change"
+			hx-target="#ticket-list"
+			hx-swap="innerHTML"
+			hx-include="#search"
+		>
+			<option value="">All Statuses</option>
+			<option value="new" selected={ status == "new" }>New</option>
+			<option value="in_progress" selected={ status == "in_progress" }>In Progress</option>
+			<option value="waiting_parts" selected={ status == "waiting_parts" }>Waiting for Parts</option>
+			<option value="ready" selected={ status == "ready" }>Ready for Pickup</option>
+			<option value="completed" selected={ status == "completed" }>Completed</option>
+		</select>
+	</div>
+}
