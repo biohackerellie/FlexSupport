@@ -4,6 +4,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	"flexsupport/internal/config"
 	mw "flexsupport/internal/middleware"
 	"flexsupport/static"
 
@@ -16,18 +17,29 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-var AppDev string = "development"
-
-func NewRouter(log *slog.Logger) *chi.Mux {
+func NewRouter(log *slog.Logger, cfg *config.Config) *chi.Mux {
 	r := chi.NewMux()
 	// Dashboard
 
-	r.Handle("/assets/*",
-		disableCacheInDevMode(
-			http.StripPrefix("/assets/",
-				static.AssetRouter()),
-		),
-	)
+	r.Group(func(r chi.Router) {
+		r.Use(
+			middleware.Compress(5),
+		)
+		r.Handle("/assets/*",
+			disableCacheInDevMode(
+				http.StripPrefix("/assets/",
+					static.AssetRouter(cfg)),
+				cfg,
+			),
+		)
+		r.Handle("/public/*",
+			disableCacheInDevMode(
+				http.StripPrefix("/public/",
+					static.PublicRouter(cfg)),
+				cfg,
+			),
+		)
+	})
 	// Tickets
 	r.Group(func(r chi.Router) {
 		r.Use(
@@ -45,8 +57,8 @@ func NewRouter(log *slog.Logger) *chi.Mux {
 	return r
 }
 
-func disableCacheInDevMode(next http.Handler) http.Handler {
-	if AppDev == "development" {
+func disableCacheInDevMode(next http.Handler, cfg *config.Config) http.Handler {
+	if cfg.Environment == config.PROD {
 		return next
 	}
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

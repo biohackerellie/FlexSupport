@@ -9,8 +9,8 @@ import (
 	// "flexsupport/ui/components/dropdown"
 	"flexsupport/ui/components/input"
 	"flexsupport/ui/components/label"
-	// "flexsupport/ui/components/popover"
-	// "flexsupport/ui/components/selectbox"
+	"flexsupport/ui/components/popover"
+	"flexsupport/ui/components/selectbox"
 	// "flexsupport/ui/components/textarea"
 	"flexsupport/ui/components/dialog"
 	// "flexsupport/ui/components/toast"
@@ -31,6 +31,8 @@ templ BaseLayout(contents templ.Component) {
 			@input.Script()
 			@label.Script()
 			@dialog.Script()
+			@selectbox.Script()
+			@popover.Script()
 			<script nonce={ templ.GetNonce(ctx) }>
 				(function() {
 					// Get current theme preference (system, light, or dark)

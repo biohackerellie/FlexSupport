@@ -3,6 +3,8 @@ package dashboard
 import (
 	"flexsupport/internal/models"
 	"flexsupport/ui/components/card"
+
+	"flexsupport/ui/components/button"
 	"flexsupport/ui/partials/tables"
 	"flexsupport/ui/partials/search"
 )
@@ -138,19 +140,15 @@ templ Dashboard(tickets []models.Ticket, isMobile bool) {
 		</div>
 		if !isMobile {
 			<!-- Filters and Search -->
-			@card.Card() {
-				@card.Content() {
-					<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-						@search.SearchTickets("", "")
-						<a
-							href="/tickets/new"
-							class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-						>
-							New Ticket
-						</a>
-					</div>
+			<div class="flex flex-row items-center my-2 justify-between gap-4">
+				@search.SearchTickets("", "")
+				@button.Button(button.Props{
+					Href:    "/tickets/new",
+					Variant: button.VariantOutline,
+				}) {
+					New Ticket
 				}
-			}
+			</div>
 		}
 		@tables.TicketsTable(tickets, isMobile)
 	</div>

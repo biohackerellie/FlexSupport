@@ -2,9 +2,12 @@ package static
 
 import (
 	"embed"
-	// "fmt"
+	"fmt"
 	"io/fs"
 	"net/http"
+
+	"flexsupport/internal/config"
+	// "fmt"
 	// "strings"
 	// "github.com/go-chi/chi/v5"
 	// "github.com/go-chi/chi/v5/middleware"
@@ -14,13 +17,29 @@ import (
 //go:embed all:assets
 var Static embed.FS
 
-var AppDev string = "development"
+//go:embed all:public
+var Public embed.FS
 
-func AssetRouter() http.Handler {
-	if AppDev == "development" {
+func AssetRouter(cfg *config.Config) http.Handler {
+	if cfg.Environment == config.DEV {
+
+		fmt.Println("ASSETS DEV")
 		return http.FileServer(http.Dir("./static/assets"))
 	}
 	st, err := fs.Sub(Static, "assets")
+	if err != nil {
+		panic(err)
+	}
+	handler := http.FileServer(http.FS(st))
+	return handler
+}
+
+func PublicRouter(cfg *config.Config) http.Handler {
+	if cfg.Environment == config.DEV {
+		fmt.Println("PUBLIC DEV")
+		return http.FileServer(http.Dir("./static/public"))
+	}
+	st, err := fs.Sub(Public, "public")
 	if err != nil {
 		panic(err)
 	}

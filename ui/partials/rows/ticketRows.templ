@@ -19,8 +19,8 @@ templ TicketRows(tickets []models.Ticket, isMobile bool) {
 					<a href={ ticketUrl } class="text-blue-600 hover:text-blue-900">{ ticket.ID }</a>
 				}
 				@table.Cell() {
-					<div class="text-sm font-medium text-primary-foreground">{ ticket.CustomerName }</div>
-					<div class="text-sm ">{ ticket.CustomerEmail }</div>
+					<div class="text-sm font-medium ">{ ticket.CustomerName }</div>
+					<div class="text-sm text-muted-foreground ">{ ticket.CustomerEmail }</div>
 				}
 				@table.Cell() {
 					{ ticket.ItemType }
